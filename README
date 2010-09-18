@@ -255,6 +255,10 @@ NOTES
     will probably cause problems.
 
 CHANGES
+  Version 1.11, 20100917, jeagle
+    Appease older versions of Perl in print_usage's usage of square brackets
+    in a string.
+
   Version 1.10, 20100709, jeagle
     Correct handling of eval flags mixed with other flags.
 

@@ -661,7 +661,7 @@ sub print_usage {
 
     print $fh 'Usage: ',
      basename( $0 ),
-     wrap( '', '', " <-help|command> ${usage_short}[flags]\n" ),
+     wrap( '', '', " <-help|command> ${usage_short}\[flags\]\n" ),
      "\n",
      $USAGE_HEADER,
      "Options:\n",
@@ -670,6 +670,11 @@ sub print_usage {
 }
 
 =head1 CHANGES
+
+=head2 Version 1.11, 20100917, jeagle
+
+Appease older versions of Perl in print_usage's usage of square brackets in
+a string.
 
 =head2 Version 1.10, 20100709, jeagle
 
