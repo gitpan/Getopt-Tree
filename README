@@ -112,22 +112,48 @@ USAGE
 
   Functions
    parse_command_line
-    Parses the command line based on the specified data structure.
+    Parses the command line (@ARGV) based on the specified data structure.
 
-    Accepts a single required parameter, an array reference describing the
-    possible command line parameters. It returns two values, the "top level"
-    option and a hashref of the other options specified.
+    Accepts two parameters. The first is a required array reference
+    describing the possible command line parameters. It returns three
+    values, the "top level" option, a hashref of the other specified
+    options, and an arrayref of any remaining unparsed options (similar to
+    Getopt::Long).
 
-    If the command line was unable to be parsed (the user specified an
-    invalid option, the passed data structure was inconsistent, etc),
-    parse_command_line will die with an appropriate error message.
+    The second parameter is an optional array reference or string from which
+    the parameters are to be read, rather than reading them from @ARGV. If a
+    string is passed, it will be converted to an array via
+    "Text::ParseWords::shellwords".
+
+    If the command line was unable to be parsed (the passed data structure
+    was inconsistent, etc), parse_command_line will die with an appropriate
+    error message. If the command line was invalid (the user entered
+    something that did not meet the given requirements, etc) a warning will
+    be printed and undef will be returned.
 
    print_usage
     Prints usage information based on the specified data structure.
 
     Takes two parameters, the first is a required array reference describing
     the possible command line parameters, and the second is an optional file
-    handle to which the usage information will be printed.
+    handle to which the usage information will be printed. Alternately, in
+    place of a filehandle, a hashref of options can be passed. Valid options
+    are:
+
+    fh  The filehandle to print to. If not set, no output is printed.
+
+    return
+        A boolean value that determines whether or not the usage should be
+        returned as a string.
+
+    wrap_at
+        Number of characters to wrap the output at. Will be auto-detected
+        from $ENV{COLUMNS} if not set, defaults to 80 if auto-detection
+        fails.
+
+    hide_top_line
+        Hides the top line of output which contains the program name how to
+        pass switches.
 
     Usage information is generated mostly from the "descr" fields in the
     data structure, indentation is based on parameter dependence, parameters
@@ -163,10 +189,6 @@ USAGE
     of a tree, where as a "branch" would be the specific set of dependents
     for a given command, irrespective of dependents of commands on the same
     level.
-
-    A top level command "-help" is always available and, if found, will call
-    print_usage on the current data structure and send the results to STDOUT
-    and then exit(0).
 
    Data Structure
     The data structure is composed of an array of hashrefs. Each hashref
@@ -235,6 +257,11 @@ VARIABLES
   $Getopt::Tree::USAGE_HEADER
     Text to be printed at the end of the "usage" output.
 
+  $Getopt::Tree::SWITCH_PREFIX_STR
+    Characters to prefix a switch. Defaults to a single hyphen ('-'). Can be
+    set to an empty string to use switchless options (Note: This option is
+    not well tested!).
+
 NOTES
     You can't have a dependent parameter of the same name as a non-optional
     parameter higher in the tree. If the parser sees a two instances of the
@@ -255,6 +282,16 @@ NOTES
     will probably cause problems.
 
 CHANGES
+  Version 1.12, 20100411, jeagle
+    Add ability to return usage as a string.
+
+    Add ability to set the prefix character via
+    $Getopt::Tree::SWITCH_PREFIX_STR
+
+    Remove automatic -help flag.
+
+    Fix a silly bug causing parameter values that evaluate to false to fail.
+
   Version 1.11, 20100917, jeagle
     Appease older versions of Perl in print_usage's usage of square brackets
     in a string.
